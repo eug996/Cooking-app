@@ -3,6 +3,23 @@
 import "./CreatePage.css";
 import { useFetch } from "../../hooks/useFetch";
 import { useForm } from "../../hooks/useForm";
+import { FormEvent } from "react";
+import {type Recipe} from "../../components/RecipeList/RecipeList";
+import { Navigate } from "react-router-dom";
+
+// type NewRecipe = {
+//   title: string;
+//   ingredients: string[];
+//   method: string;
+//   cookingTime: number;
+// };
+
+type NewRecipe = Omit<Recipe, "id">;
+type RecipeForm = Pick<NewRecipe, Exclude<keyof NewRecipe, "ingredients">> & {
+  ingredients: string;
+};
+
+
 
 const initialFormData = {
   title: "",
@@ -14,12 +31,37 @@ const initialFormData = {
   
 export default function CreatePage() {
 
-  const { formData, updateFormField } = useForm<any>(initialFormData);
+  const { postData, data, error } = useFetch<NewRecipe>(
+    `${process.env.REACT_APP_DB_URL}`,
+    { method: "POST" }
+  );
+
+
+  const { formData, updateFormField } = useForm<RecipeForm>(initialFormData);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+   e.preventDefault(); // prevent the default submit event which reloads the page
+   //postData(formData);
+
+   const ingredientsAsArray = formData.ingredients
+      .split(",")
+      .map((ingredient) => ingredient.trim());
+
+      postData({
+        ...formData,
+        ingredients: ingredientsAsArray,
+      });
   
+};
+
+// Redirect user when we get data response
+if (data) {
+  return <Navigate to="/" />;
+}  
 
   
   return (
-      <form className="create-form">
+      <form className="create-form" onSubmit={handleSubmit}>
         <h2>Create recipe</h2>
         <p>
           Required fields are followed by{" "}
