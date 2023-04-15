@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+  
+import "./App.css";
+import CreatePage from "./pages/create/CreatePage";
+import HomePage from "./pages/home/HomePage";
+import RecipePage from "./pages/recipe/RecipePage";
+import SearchPage from "./pages/search/SearchPage";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import NavBar from "./components/NavBar";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LayoutWrapper />,
+    children: [  
+  {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/create",
+    element: <CreatePage />,
+  },
+  {
+    path: "/recipes/:recipeId",
+    element: <RecipePage />,
+  },
+  {
+    path: "/search",
+    element: <SearchPage />,
+  },
+],
+},
+]);
+
+function LayoutWrapper() {
+  return (
+    <div className="App">
+      <NavBar />
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router} />
     </div>
-  );
+  ) ;
 }
 
 export default App;
