@@ -1,7 +1,41 @@
-// src/pages/search/SearchPage.tsx
-  
+import RecipeList, { type Recipe,} from "../../components/RecipeList/RecipeList";
+import { useFetch } from "../../hooks/useFetch";
+import { useSearchParams } from "react-router-dom";
+
 import "./SearchPage.css";
-  
+
 export default function SearchPage() {
-  return <h1>Search</h1>;
+
+
+  let [searchParams] = useSearchParams();
+  const query = searchParams.get("q");
+
+  const { data, error } = useFetch<Recipe[]>(`${process.env.REACT_APP_DB_URL}?q=${query}`);
+
+
+
+
+
+  if (error)
+    return (
+      <p aria-live="polite" role="status">
+        {error.message}
+      </p>
+    );
+  if (!data)
+    return (
+      <p aria-live="polite" role="status">
+        Loading...
+      </p>
+    );
+
+  return  (
+  <>
+  <RecipeList recipes={data} />
+  <h2>Recipes including "{query}"</h2>
+  </>
+  );
+
+
+  
 }
